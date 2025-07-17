@@ -1,45 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Google Sheet Data Example</title>
+  <meta charset="UTF-8">
+  <title>Deals from Google Sheet</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f8f8f8; }
+    .deal { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .deal-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 5px; }
+    .deal-price { color: #d9534f; font-weight: bold; }
+    .deal-description { color: #555; }
+  </style>
 </head>
 <body>
-  <h2>Products</h2>
-  <div id="products"></div>
+  <h2>Live Deals</h2>
+  <div id="deals-container">Loading deals...</div>
 
   <script>
-    const sheetID = "2PACX-1vRIePwiEKMLEjXx8dbFUGjIrK9Ow0A3MDHGWlVMdB2GgD3FLkKwJPGidR0DKEVJXHy5gAVJDmQZ4xP9";
+    const sheetID = "2PACX-1vRIePwiEKMLEjXx8dbFUGjIrK9Ow0A3MDHGWlVMdB2GgD3FLkKwJPGidR0DKEVJXHy5gAVJDmQZ4xP9"; // Replace with your actual sheet ID
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
     fetch(url)
       .then(res => res.text())
       .then(text => {
-        const json = JSON.parse(text.substring(47).slice(0, -2)); // clean up Google wrapper
-        const rows = json.table.rows;
-
-        // Optional: get column headers
+        const json = JSON.parse(text.substring(47).slice(0, -2)); // remove JSONP padding
         const headers = json.table.cols.map(col => col.label);
-
-        // Convert rows to array of objects
-        const data = rows.map(row => {
+        const rows = json.table.rows.map(row => {
           return row.c.reduce((obj, cell, i) => {
             obj[headers[i]] = cell ? cell.v : "";
             return obj;
           }, {});
         });
 
-        // Now you can use `data` however you want!
-        const container = document.getElementById("products");
-        data.forEach(item => {
-          container.innerHTML += `
-            <div>
-              <strong>${item.Title}</strong><br>
-              Price: $${item.Price}<br>
-              Description: ${item["In Stock"]}
-              <hr>
-            </div>
+        const container = document.getElementById("deals-container");
+        container.innerHTML = ""; // clear "Loading..."
+
+        rows.forEach(deal => {
+          const div = document.createElement("div");
+          div.className = "deal";
+          div.innerHTML = `
+            <div class="deal-title">${deal.Title}</div>
+            <div class="deal-price">$${deal.Price}</div>
+            <div class="deal-description">${deal.Description}</div>
           `;
+          container.appendChild(div);
         });
+      })
+      .catch(error => {
+        document.getElementById("deals-container").innerText = "Failed to load deals.";
+        console.error("Fetch error:", error);
       });
   </script>
 </body>
