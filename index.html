@@ -16,7 +16,7 @@
   <div id="deals-container">Loading deals...</div>
 
   <script>
-    const sheetID = "2PACX-1vRIePwiEKMLEjXx8dbFUGjIrK9Ow0A3MDHGWlVMdB2GgD3FLkKwJPGidR0DKEVJXHy5gAVJDmQZ4xP9"; // Replace with your actual sheet ID
+    const sheetID = "1vRIePwiEKMLEjXx8dbFUGjIrK9Ow0A3MDHGWlVMdB2GgD3FLkKwJPGidR0DKEVJXHy5gAVJDmQZ4xP9"; // Replace with your actual sheet ID
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
     fetch(url)
@@ -29,7 +29,7 @@
             obj[headers[i]] = cell ? cell.v : "";
             return obj;
           }, {});
-        });
+        });e
 
         const container = document.getElementById("deals-container");
         container.innerHTML = ""; // clear "Loading..."
